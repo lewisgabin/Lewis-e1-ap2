@@ -1,0 +1,134 @@
+  
+@page "/consulta"
+@using Lewis_e1_ap2.Models
+@inject IToastService toast
+
+<h3>Consulta Articulos</h3>
+
+<select @bind="opcion" class="form-control">
+    <option value="0" disable>Selecione una opcion</option>
+    <option value="1">Producto</option>
+    <option value="2">IdProducto</option>
+</select>
+
+<div class="input-group mt-3">
+    <input type="text" @bind="criterio" class="form-control" />
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="Consultar">Consultar</button>
+    </div> 
+</div>
+
+
+@if(lista == null)
+{
+    <h3>No existen articulos en la base de datos</h3>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ArticuloId</th>
+                <th>Descripcion</th>
+                <th>Stock</th>
+                <th>Costo</th>
+                <th>Valor Inventario</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var list in lista)
+            {
+                <tr>
+                    <td>@list.ArticuloId</td>
+                    <td>@list.Descripcion</td>
+                    <td>@list.Stock</td>
+                    <td>@list.Costo</td>
+                    <td>@list.ValorInventario</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="form-group">
+    <label><strong>Cantidad de inventario: </strong></label>
+    <input class="form-control" type="text" readonly @bind="@totalProductos"/>
+</div>
+<div class="form-group">
+    <label><strong>Total de valor en inventario: </strong></label>
+    <input class="form-control" type="text" readonly @bind="@totalInventario" />
+</div>
+<BlazoredToasts />
+
+@code {
+
+    List<Articulos> lista = new List<Articulos>();
+    private string opcion;
+    private string criterio;
+
+    private int totalProductos;
+    private decimal totalInventario;
+
+    protected override void OnInitialized()
+    {
+        lista = ArticulosBLL.GetList(x => true);
+        AumentarTotales();
+    }
+
+    private void Consultar()
+    {
+        int opcionElegida = Convert.ToInt32(opcion);
+       
+        if (criterio.Trim().Length > 0)
+        {
+            switch (opcionElegida)
+            {
+                case 0:
+                    {
+                        toast.ShowError("Opcion incorrecta");
+                    }
+                    break;
+
+                case 1:
+                    {
+                        lista = ArticulosBLL.GetList(x => x.Descripcion == criterio);
+                    }
+                    break;
+
+                case 2:
+                    {
+                        int id = int.Parse(criterio);
+                        lista = ArticulosBLL.GetList(x => x.ArticuloId == id);
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            lista = ArticulosBLL.GetList(x => true);
+        }
+    }
+
+    private void AumentarTotales()
+    {
+        AumentarTotalInventario();
+        AumentarTotalProductos();
+    }
+
+    private void AumentarTotalProductos()
+    {
+        foreach(var articulo in lista)
+        {
+            totalProductos = totalProductos + articulo.Stock;
+        }
+    }
+
+    private void AumentarTotalInventario()
+    {
+        foreach (var articulo in lista)
+        {
+            totalInventario = totalInventario + articulo.ValorInventario;
+        }
+    }
+}
