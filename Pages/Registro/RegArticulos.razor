@@ -1,0 +1,153 @@
+@page "/Registro/Articulos"
+@using Lewis_e1_ap2.Models
+@inject IToastService toast
+
+<EditForm Model="articulos" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Registro Articulos</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+
+                @*ArticulosId *@
+                <div class="form-row align-items-center">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Articulo Id</label>
+                            <div class="input-group">
+                                <InputNumber @bind-Value="articulos.ArticuloId" class="form-control col-4" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary input-group-text" @onclick="Buscar">
+                                        <span class="oi oi-zoom-in"></span> Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @*Descripcion*@
+                <div class="form-group">
+                    <label>Descripcion</label>
+                    <InputText @bind-Value="articulos.Descripcion" class="form-control"></InputText>
+                      <ValidationMessage For="@(()=> articulos.Descripcion)"/>
+                    <small class="text-muted">Insertar descrpcion del articulo</small>
+                </div>
+
+                @*Inventario*@
+                <div class="form-group">
+                    <label>Stock</label>
+                    <InputNumber @bind-Value="articulos.Stock" @onfocusout="ActualizarValorInventario" class="form-control"></InputNumber>
+                    <ValidationMessage For="@(()=> articulos.Stock)"/>
+                    <small class="text-muted">Insertar la cantidad de producto en el inventario</small>
+                </div>
+
+                @*Costo*@
+                <div class="form-group">
+                    <label>Costo</label>
+                    <InputNumber @bind-Value="articulos.Costo" class="form-control" @onfocusout="ActualizarValorInventario"></InputNumber>
+                     <ValidationMessage For="@(()=> articulos.Costo)"/>
+                    <small class="text-muted">Insertar el costo del articulo</small>
+                </div>
+
+                @*ValorInventario*@
+                <div class="form-group">
+                    <label>Valor Inventario</label>
+                    <InputNumber @bind-Value="articulos.ValorInventario" class="form-control" readOnly></InputNumber>
+                  
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="form-group text-center" display: inLine:block>
+                <button class="btn btn-info" @onclick="Nuevo">
+                    <span class="oi oi-plus"></span> Nuevo
+                </button>
+
+                <button class="btn btn-success" type="submit">
+                    <span class="oi oi-clipboard"></span> Guardar
+                </button>
+
+                <button class="btn btn-danger" @onclick="Eliminar">
+                    <span class="oi oi-trash"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+<BlazoredToasts />
+@code {
+
+    Articulos articulos = new Articulos();
+    public decimal valor = 0;
+
+    protected override void OnInitialized()
+    {
+        Nuevo();
+        Buscar();
+    }
+
+    private void Nuevo()
+    {
+        articulos = new Articulos();
+    }
+
+    private void Buscar()
+    {
+        if (articulos.ArticuloId > 0)
+        {
+            var encontrado = ArticulosBLL.Buscar(articulos.ArticuloId);
+
+            if (encontrado != null)
+            {
+                this.articulos = encontrado;
+            }
+            else
+            {
+                toast.ShowWarning("No encontrado");
+            }
+        }
+    }
+
+    private void Guardar()
+    {
+        bool guardo;
+        guardo = ArticulosBLL.Guardar(articulos);
+
+        if (guardo)
+        {
+            Nuevo();
+            toast.ShowSuccess("Guardado!!!!");
+        }
+        else
+        {
+            toast.ShowWarning("No guardo");
+        }
+
+    }
+
+    private void Eliminar()
+    {
+        bool eliminado = ArticulosBLL.Eliminar(articulos.ArticuloId);
+
+        if (eliminado)
+        {
+            Nuevo();
+            toast.ShowSuccess("Eliminado");
+        }
+        else
+        {
+            toast.ShowWarning("No eliminado");
+        }
+    }
+
+    private void ActualizarValorInventario()
+    {
+        this.articulos.ValorInventario = articulos.Costo * articulos.Stock;
+    }
+}

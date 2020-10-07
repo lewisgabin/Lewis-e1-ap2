@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Lewis_e1_ap2.DAL;
 using Lewis_e1_ap2.Models;
 using Microsoft.EntityFrameworkCore;
@@ -136,6 +138,50 @@ namespace Lewis_e1_ap2.BLL
             }
 
             return articulos;
+        }
+
+           public static List<Articulos> GetList(Expression<Func<Articulos, bool>> criterio)
+        {
+            List<Articulos> lista = new List<Articulos>();
+            Contexto contexto = new Contexto();
+
+            try
+            {
+                lista = contexto.Articulos.Where(criterio).ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return lista;
+        }
+
+          public static List<Articulos> GetArticulos()
+        {
+            List<Articulos> lista = new List<Articulos>();
+            Contexto contexto = new Contexto();
+
+            try
+            {
+                lista = contexto.Articulos.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                contexto.Dispose();
+            }
+
+            return lista;
         }
 
     }
