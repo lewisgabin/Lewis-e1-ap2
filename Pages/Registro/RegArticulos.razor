@@ -6,7 +6,7 @@
     <DataAnnotationsValidator />
     <div class="card">
         <div class="card-header">
-            <h3>Registro Articulos</h3>
+            <h3>Registro Artículo</h3>
         </div>
 
         <div class="card-body">
@@ -16,7 +16,7 @@
                 <div class="form-row align-items-center">
                     <div class="col">
                         <div class="form-group">
-                            <label>Articulo Id</label>
+                            <label>Artículo, Id</label>
                             <div class="input-group">
                                 <InputNumber @bind-Value="articulos.ArticuloId" class="form-control col-4" />
                                 <div class="input-group-append">
@@ -31,10 +31,10 @@
 
                 @*Descripcion*@
                 <div class="form-group">
-                    <label>Descripcion</label>
+                    <label>Descripción</label>
                     <InputText @bind-Value="articulos.Descripcion" class="form-control"></InputText>
                       <ValidationMessage For="@(()=> articulos.Descripcion)"/>
-                    <small class="text-muted">Insertar descrpcion del articulo</small>
+                    <small class="text-muted">Insertar descripción del artículo</small>
                 </div>
 
                 @*Inventario*@
@@ -50,7 +50,7 @@
                     <label>Costo</label>
                     <InputNumber @bind-Value="articulos.Costo" class="form-control" @onfocusout="ActualizarValorInventario"></InputNumber>
                      <ValidationMessage For="@(()=> articulos.Costo)"/>
-                    <small class="text-muted">Insertar el costo del articulo</small>
+                    <small class="text-muted">Insertar el costo del artículo</small>
                 </div>
 
                 @*ValorInventario*@
@@ -65,7 +65,7 @@
 
         <div class="card-footer">
             <div class="form-group text-center" display: inLine:block>
-                <button class="btn btn-info" @onclick="Nuevo">
+                <button type="button" class="btn btn-info" @onclick="Nuevo">
                     <span class="oi oi-plus"></span> Nuevo
                 </button>
 
